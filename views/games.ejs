@@ -1,0 +1,25 @@
+<%- include('header') -%>
+<style>
+  .disabled {
+    pointer-events: none;
+    cursor: default;
+  }
+</style>
+<span>Games:</span>
+<ul class="games-list">
+  <% games.forEach(function (game) { %>
+  <li>
+    <% if (game.started) { %>
+    <a href="/games/<%= game.id %>" class="disabled">Game-<%= game.id %></a>
+    <span>(Ongoing)</span>
+    <% } else { %>
+    <a href="/games/<%= game.id %>">Game-<%= game.id %></a>
+    <span>(<%= 4 - game.players.length %> slots left)</span>
+    <% } %>
+  </li>
+  <% }) %>
+</ul>
+<form action="/games" method="POST">
+  <input type="submit" value="Create Game!" />
+</form>
+<%- include('footer') -%>

@@ -1,0 +1,20 @@
+{
+  "name": "sample-game",
+  "version": "0.0.1",
+  "description": "Demo application that uses socket.io",
+  "main": "server.js",
+  "scripts": {
+    "test": ""
+  },
+  "author": "Vishal Gowda",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "ejs": "^2.5.6",
+    "express": "^4.15.3",
+    "express-session": "^1.15.3",
+    "express-socket.io-session": "^1.3.2",
+    "mathjs": "^3.13.3",
+    "socket.io": "^2.0.3"
+  }
+}

@@ -1,0 +1,73 @@
+<%- include('header') -%>
+<h2>Game Room - <%= game.id %></h2>
+<span>Players:</span>
+<ul class="players-list">
+  <% game.players.forEach(function (player) { %>
+    <li id=<%= player %>><%= player %></li>
+  <% }) %>
+</ul>
+<span>Activity:</span>
+<ul id="messages"></ul>
+<span id="question"></span>
+<button id="start-game" <% if (game.players.length < 2) { %>disabled <% } %>>Start Game!</button>
+<button id="leave-game" style="visibility: hidden;">Leave Game :(</button>
+<form action="">
+  <input id="m" autocomplete="off" /><button>Send</button>
+</form>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  $(function () {
+    var socket = io();
+    var room = <%= game.id %>;
+  var started = false;
+  var question;
+
+    socket.on("connect", function() {
+      socket.emit("join room", room);
+    });
+
+    socket.on("question pushed", function(q) {
+      question = q;
+      $("#question").empty();
+      $("#question").append(question);
+      $("#leave-game").css("visibility", "inherit");
+      $("#start-game").attr("disabled", true);
+      started = true;
+    });
+
+    socket.on("message", function(msg) {
+      $("#messages").append($("<li>"+msg+"</li>"));
+    });
+
+    socket.on("players changed", function(users) {
+      $(".players-list").empty();
+      $(users).each(function(idx, user) {
+         $(".players-list").append($("<li>").attr("id", user).append(user));
+      });
+      if (users.length >= 2) {
+        $("#start-game").attr("disabled", null);
+        }
+  });
+
+  socket.on("end game", function() {
+  $("#m").attr("disabled", true);
+  $("form button").attr("disabled", true);
+  });
+
+  $("#start-game").on("click", function(e) {
+    socket.emit("start game", room);
+    });
+
+    $("#leave-game").on("click", function(e) {
+      $(location).attr("href", "/");
+    });
+
+    $("form").submit(function () {
+      socket.emit("answer", {question: question, answer: $("#m").val()});
+      $("#m").val("");
+      return false;
+    });
+  });
+</script>
+<%- include('footer') -%>

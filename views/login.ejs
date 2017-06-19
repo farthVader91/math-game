@@ -1,0 +1,13 @@
+<%- include('header') -%>
+<% if (locals.error) { %>
+  <span class="error"><%= error %></span>
+<% } %>
+<div class="login-form">
+  <form action="/login" method="POST">
+    <input type="text" name="username" placeholder="Username" />
+    <input type="password" name="password" placeholder="Password" />
+    <input type="submit" value="Enter!" />
+  </form>
+</div>
+<a href="/register">New User?</a>
+<%- include('footer') -%>
