@@ -20,7 +20,6 @@ router.route("/")
             id: ++counter,
             players: [],
             started: false,
-            attempted: 0,
             completed: false
         };
         games.push(game);
@@ -85,8 +84,6 @@ io.on("connection", function(socket) {
     socket.on("answer", function(payload) {
         user = socket.handshake.session.user;
         game = games.find(g => g.players.indexOf(user) != -1);
-        // Increment attempted count
-        game.attempted++;
         // Validate answer
         if (!game.completed && isCorrect(payload)) {
             game.completed = true;
@@ -94,9 +91,11 @@ io.on("connection", function(socket) {
             io.to(game.id).emit("message", "Player &lt;" + user + "&gt; is the winner!");
             io.to(game.id).emit("end game");
             // Remove game from list
-            idx = games.indexOf(g => g.id == game.id);
+            console.log("delisting game");
+            idx = games.indexOf(game);
             if (idx > -1)
               games.splice(idx, 1);
+            console.log(games);
         } else
             io.to(game.id).emit("message", "Player &lt;" + user + "&gt; has attempted!");
         //
@@ -109,11 +108,15 @@ io.on("connection", function(socket) {
       game = games.find(g => g.players.indexOf(user) != -1);
       if (!game)
         return;
+      console.log("delisting game");
       game.players.splice(game.players.indexOf(user), 1);
       io.to(game.id).emit("players changed", game.players);
       // Remove game if all players left
-      if (game.players.length == 0)
-        games.splice(games.indexOf(g => g.id == game.id), 1);
+      if (game.players.length == 0) {
+        idx = games.indexOf(game);
+        if (idx > -1)
+          games.splice(idx, 1);
+      }
     });
 });
 
